@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <form action="" id="formulario">
+    <input type="text" id="id" required placeholder="Coloca ID">
+    <button type="submit">Buscar:</button>
+    <br><br>
+    <label for="nombre">Nombre:</label>
+    <input type="text" id="nombre">
+    <br><br>
+    <label for="estatura">Estatura:</label>
+    <input type="text" id="estatura">
+    <br><br>
+    <label for="peso">Peso</label>
+    <input type="text" id="peso">
+    <br><br>
+    <label for="color">Color de cabello:</label>
+    <input type="text" id="color">
+    <br><br>
+    <label for="genero">Genero:</label>
+    <input type="text" id="genero">
+  </form>
+
+  <table border="1">
+    <thead>
+      <tr>
+        <th>Peliculas</th>
+        <th>Vehiculos</th>
+        <th>Naves</th>
+      </tr>  
+    </thead>
+
+    <tbody>
+    <tr>
+      <td id="peliculas">0</td>
+      <td id="vehiculos">0</td>
+      <td id="naves">0</td>
+    </tr>
+  </tbody>
+  </table>
+  
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const formulario = document.getElementById("formulario")
+      const id = document.getElementById("id")
+      const nombre = document.getElementById("nombre")
+      const estatura = document.getElementById("estatura")
+      const peso = document.getElementById("peso")
+      const color = document.getElementById("color")
+      const genero = document.getElementById("genero")
+      const peliculas = document.getElementById("peliculas")
+      const vehiculos = document.getElementById("vehiculos")
+      const naves = document.getElementById("naves")
+
+      formulario.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        const idBuscar = parseInt(id.value);
+
+        if (idBuscar <= 0) {
+          //Funcion reinicie UI
+          return;
+        }
+
+        obtenerPersonaje(idBuscar);
+      });
+
+      async function obtenerPersonaje(id){
+        const URL = `https://swapi.dev/api/people/${id}`
+        const respuesta = await fetch(URL);
+
+        if (!respuesta.ok) {
+          console.log("Error en la peticion");
+          return;
+        }
+
+        const datos = await respuesta.json();
+        console.log(datos);
+
+        nombre.value = datos.name
+        estatura.value = datos.height
+        peso.value = datos.mass
+        color.value = datos.hair_color
+        genero.value = datos.gender
+
+        peliculas.textContent = datos.films.length;
+        vehiculos.textContent = datos.vehicles.length;
+        naves.textContent = datos.starships.length;
+      }
+    })
+  </script>
+</body>
+</html>
