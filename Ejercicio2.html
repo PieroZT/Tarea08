@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="./css/Ejercicio2.css">
+</head>
+
+<body>
+
+  <form action="" id="formulario">
+    <input type="text" id="idplaneta" placeholder="Ejem. 1">
+    <button type="submit">Buscar</button>
+  </form>
+
+  <div class="loader" id="loader"></div>
+
+  <h2>Datos del planeta</h2>
+  <ul id="datosPlaneta"></ul>
+
+  <h2>Datos de los habitantes</h2>
+  <ul id="datoshabitantes"></ul>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const formulario = document.getElementById("formulario")
+      const id = document.getElementById("idplaneta")
+
+      formulario.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const idBuscar = parseInt(id.value);
+        if (idBuscar <= 0) {
+          //Funcion reinicie UI
+          return;
+        }
+
+        obtenerPlaneta(idBuscar);
+      });
+
+      async function obtenerPlaneta(id) {
+        const URL = `https://swapi.dev/api/planets/${id}`
+        const respuesta = await fetch(URL)
+
+        if (!respuesta.ok) {
+          console.log("Error en la peticion");
+          return;
+        }
+
+        const datos = await respuesta.json();
+        console.log(datos);
+
+        const listaPlanetas = document.getElementById("datosPlaneta")
+        listaPlanetas.innerHTML = ""
+
+        if (listaPlanetas.length == 0) {
+          const li = document.createElement("li");
+          li.innerText = "Sin Planetas";
+          listaHabitantes.appendChild(li);
+          return;
+        }
+
+        const caracteristicas = [
+          `Nombre: ${datos.name}`,
+          `Periodo de rotación: ${datos.rotation_period}`,
+          `Diámetro: ${datos.diameter}`,
+          `Gravedad: ${datos.gravity}`,
+          `Terreno: ${datos.terrain}`,
+          `Habitantes: ${datos.population}`,
+        ]
+
+        caracteristicas.forEach((informacion) => {
+          const li = document.createElement("li")
+          li.innerText = informacion
+          listaPlanetas.appendChild(li)
+        })
+
+
+        //Habitantes
+        const listaHabitantes = document.getElementById("datoshabitantes");
+        listaHabitantes.innerHTML = "";
+
+        if (datos.residents.length == 0) {
+          const li = document.createElement("li");
+          li.innerText = "Sin habitantes";
+          listaHabitantes.appendChild(li);
+          return;
+        }
+
+        datos.residents.forEach(async(url) =>{
+          const respuestaPersonaje = await fetch(url);
+          const personaje = await respuestaPersonaje.json();
+
+          const li = document.createElement("li");
+          li.innerText = personaje.name;
+          listaHabitantes.appendChild(li);
+        })
+      }
+    })
+  </script>
+</body>
+
+</html>
